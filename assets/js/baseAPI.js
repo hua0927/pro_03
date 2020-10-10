@@ -12,7 +12,18 @@ $.ajaxPrefilter(function(params) {
     // 必须是以/my/开头
     if (params.url.indexOf('/my/') !== -1) {
         params.headers = {
-            Authorization: localStorage.getItem('token')
+            Authorization: localStorage.getItem('token') || ''
+        }
+    }
+
+    // 全局统一挂载 complete 回调函数
+    params.complete = function(res) {
+        console.log(res);
+        if (res.responseJSON.status === 1 && res.responseJSON.message === "身份认证失败！") {
+            // 强制清空token
+            localStorage.removeItem('token');
+            // 强制跳转到登录页面
+            location.href = '/login.html';
         }
     }
 })
